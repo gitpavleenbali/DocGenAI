@@ -5,10 +5,11 @@
 ![DocGenAI Banner](https://img.shields.io/badge/Azure-AI%20Foundry-blue?style=for-the-badge&logo=microsoft-azure)
 ![RAG](https://img.shields.io/badge/RAG-Powered-green?style=for-the-badge)
 ![One Command](https://img.shields.io/badge/Deploy-One%20Command-orange?style=for-the-badge)
+![Production Ready](https://img.shields.io/badge/Production-Ready-brightgreen?style=for-the-badge)
 
-**Deploy a complete PDF document analysis solution with Azure AI Foundry + RAG capabilities in just one command!**
+**🎯 Deploy a complete PDF document analysis solution with Azure AI Foundry + RAG capabilities in just one command!**
 
-[🚀 Quick Start](#-quick-start) • [🏗️ Architecture](#️-architecture) • [📋 Features](#-features) • [🔧 Development](#-development)
+[🚀 Quick Start](#-quick-start) • [🏗️ Architecture](#️-architecture) • [📋 Features](#-features) • [� Cost](#-cost-breakdown) • [�🔧 Development](#-development)
 
 </div>
 
@@ -21,10 +22,12 @@ DocGenAI is an **enterprise-grade Retrieval Augmented Generation (RAG)** solutio
 ### ✨ Key Highlights
 - 🤖 **AI-Powered**: Azure OpenAI GPT-4o-mini for intelligent responses
 - 📄 **PDF Analysis**: Advanced document processing and chunking
-- 🔍 **Vector Search**: Semantic search with Azure AI Search
+- 🔍 **Vector Search**: Semantic search with Azure AI Search (1536-dimensional embeddings)
 - 🌐 **Modern UI**: React TypeScript with Fluent UI components
 - ⚡ **One-Command Deploy**: From zero to production in 10 minutes
 - 🔐 **Enterprise Security**: Azure Managed Identity and RBAC
+- 📊 **Real-time Monitoring**: Application Insights and Log Analytics
+- 🔄 **Auto-Scaling**: Container Apps with 0-100+ instances based on demand
 
 ---
 
@@ -54,11 +57,19 @@ chmod +x deploy.sh
 ✅ Ready to Use!          (Total: ~10 minutes)
 ```
 
+**What happens during deployment:**
+1. ✅ Checks Azure CLI, Docker, and prerequisites
+2. ✅ Creates Azure resource group and services
+3. ✅ Deploys AI models (GPT-4o-mini, text-embedding-3-small)
+4. ✅ Builds and deploys FastAPI backend + React frontend
+5. ✅ Configures security with managed identities
+6. ✅ Sets up monitoring and logging
+
 ---
 
 ## 🏗️ Architecture
 
-### System Overview
+### 🎨 System Overview
 
 ```mermaid
 graph TB
@@ -67,17 +78,15 @@ graph TB
     
     Teams --> CopilotStudio[🤖 Copilot Studio Bot]
     
-    WebApp --> StaticWebApp[📱 Static Web App]
-    CopilotStudio --> ContainerApp[🐳 Container Apps API]
-    StaticWebApp --> ContainerApp
+    WebApp --> ContainerApp[🐳 Container Apps API]
+    CopilotStudio --> ContainerApp
     
     ContainerApp --> AIFoundry[🧠 Azure AI Foundry]
     ContainerApp --> Storage[💾 Azure Storage]
     ContainerApp --> CosmosDB[🗄️ Cosmos DB]
     ContainerApp --> AISearch[🔍 Azure AI Search]
     
-    AIFoundry --> OpenAI[🤖 Azure OpenAI]
-    AIFoundry --> MLWorkspace[🔬 ML Workspace]
+    AIFoundry --> OpenAI[🤖 Azure OpenAI<br/>GPT-4o-mini<br/>text-embedding-3-small]
     
     subgraph "Monitoring & Security"
         AppInsights[📊 Application Insights]
@@ -92,9 +101,11 @@ graph TB
     style ContainerApp fill:#f3e5f5
     style AIFoundry fill:#fff3e0
     style Storage fill:#e8f5e8
+    style CosmosDB fill:#fff8e1
+    style AISearch fill:#f1f8e9
 ```
 
-### RAG Data Flow
+### 🔄 RAG Data Flow
 
 ```mermaid
 sequenceDiagram
@@ -110,38 +121,40 @@ sequenceDiagram
     User->>WebApp: Upload PDF Document
     WebApp->>API: POST /documents/upload
     API->>Storage: Store PDF file
-    API->>AI: Generate embeddings
-    AI-->>API: Return embeddings
-    API->>Search: Index embeddings
-    API->>Cosmos: Store metadata
-    API-->>WebApp: Return document ID
+    API->>API: Extract text + chunk (1000 tokens, 200 overlap)
+    API->>AI: Generate embeddings (text-embedding-3-small)
+    AI-->>API: Return 1536-dimensional vectors
+    API->>Search: Index embeddings with metadata
+    API->>Cosmos: Store document metadata + chunks
+    API-->>WebApp: Return document ID + processing status
     
     Note over User,Cosmos: RAG Query Processing
     User->>WebApp: Ask question about document
     WebApp->>API: POST /chat
     API->>AI: Generate query embedding
-    AI-->>API: Return query embedding
-    API->>Search: Vector similarity search
-    Search-->>API: Return relevant chunks
-    API->>AI: Generate answer with context
-    AI-->>API: Return AI response
-    API-->>WebApp: Return answer
+    AI-->>API: Return query vector
+    API->>Search: Vector similarity search (top-k retrieval)
+    Search-->>API: Return relevant chunks with scores
+    API->>AI: Generate answer with context (GPT-4o-mini)
+    Note right of AI: Prompt includes:<br/>- User question<br/>- Retrieved chunks<br/>- Document metadata
+    AI-->>API: Return contextual AI response
+    API-->>WebApp: Return answer + source references
 ```
 
-### Technology Stack
+### 🛠️ Technology Stack
 
 <div align="center">
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| **Frontend** | React 18 + TypeScript | Modern web interface |
-| **Backend** | FastAPI + Python 3.9 | RAG processing engine |
-| **AI Models** | GPT-4o-mini + text-embedding-3-small | Chat + embeddings |
-| **Vector Store** | Azure AI Search | Semantic search |
-| **Document Store** | Azure Blob Storage | PDF file storage |
-| **Metadata** | Cosmos DB | Document metadata |
-| **Hosting** | Azure Container Apps | Auto-scaling hosting |
-| **Monitoring** | Application Insights | Performance tracking |
+| Layer | Technology | Purpose | Configuration |
+|-------|------------|---------|---------------|
+| **Frontend** | React 18 + TypeScript | Modern web interface | Fluent UI components |
+| **Backend** | FastAPI + Python 3.9 | RAG processing engine | Async processing |
+| **AI Models** | GPT-4o-mini + text-embedding-3-small | Chat + embeddings | Azure OpenAI |
+| **Vector Store** | Azure AI Search | Semantic search | 1536-dimensional vectors |
+| **Document Store** | Azure Blob Storage | PDF file storage | Hot tier |
+| **Metadata** | Cosmos DB | Document metadata | Serverless billing |
+| **Hosting** | Azure Container Apps | Auto-scaling hosting | 1-10 replicas |
+| **Monitoring** | Application Insights | Performance tracking | Real-time metrics |
 
 </div>
 

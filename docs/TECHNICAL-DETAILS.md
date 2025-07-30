@@ -1,4 +1,4 @@
-# Reference Architecture
+# DocGenAI - Technical Architecture Reference
 
 ## 🏗️ System Architecture Overview
 
@@ -11,17 +11,15 @@ graph TB
     
     Teams --> CopilotStudio[🤖 Copilot Studio Bot]
     
-    WebApp --> StaticWebApp[📱 Static Web App]
-    CopilotStudio --> ContainerApp[🐳 Container Apps API]
-    StaticWebApp --> ContainerApp
+    WebApp --> ContainerApp[🐳 Container Apps API]
+    CopilotStudio --> ContainerApp
     
     ContainerApp --> AIFoundry[🧠 Azure AI Foundry]
     ContainerApp --> Storage[💾 Azure Storage]
     ContainerApp --> CosmosDB[🗄️ Cosmos DB]
     ContainerApp --> AISearch[🔍 Azure AI Search]
     
-    AIFoundry --> OpenAI[🤖 Azure OpenAI]
-    AIFoundry --> MLWorkspace[🔬 ML Workspace]
+    AIFoundry --> OpenAI[🤖 Azure OpenAI<br/>GPT-4o-mini<br/>text-embedding-3-small]
     
     subgraph "Monitoring & Security"
         AppInsights[📊 Application Insights]
@@ -31,6 +29,13 @@ graph TB
     
     ContainerApp --> AppInsights
     ContainerApp --> ManagedIdentity
+    
+    style WebApp fill:#e1f5fe
+    style ContainerApp fill:#f3e5f5
+    style AIFoundry fill:#fff3e0
+    style Storage fill:#e8f5e8
+    style CosmosDB fill:#fff8e1
+    style AISearch fill:#f1f8e9
 ```
 
 ### Data Flow Architecture
@@ -48,6 +53,22 @@ sequenceDiagram
     User->>WebApp: Upload PDF Document
     WebApp->>API: POST /documents/upload
     API->>Storage: Store PDF file
+    API->>AI: Generate embeddings
+    AI-->>API: Return embeddings
+    API->>Search: Index embeddings
+    API->>Cosmos: Store metadata
+    API-->>WebApp: Return document ID
+    
+    User->>WebApp: Ask question about document
+    WebApp->>API: POST /chat
+    API->>AI: Generate query embedding
+    AI-->>API: Return query embedding
+    API->>Search: Vector similarity search
+    Search-->>API: Return relevant chunks
+    API->>AI: Generate answer with context
+    AI-->>API: Return AI response
+    API-->>WebApp: Return answer
+```
     API->>AI: Generate embeddings
     AI-->>API: Return embeddings
     API->>Search: Index embeddings
