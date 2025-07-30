@@ -1,0 +1,30 @@
+Azure AI Services Overview
+
+Azure AI Services provide comprehensive artificial intelligence capabilities to help developers build intelligent applications. These services include:
+
+1. Azure OpenAI Service
+   - Access to advanced language models like GPT-4o and GPT-3.5-turbo
+   - Text completion, chat completions, and embeddings
+   - Responsible AI practices and content filtering
+
+2. Azure AI Search
+   - Vector search capabilities for semantic understanding
+   - Full-text search with advanced ranking
+   - AI-powered indexing and content extraction
+
+3. Azure Computer Vision
+   - Image analysis and object detection
+   - Optical Character Recognition (OCR)
+   - Facial recognition and analysis
+
+4. Azure Speech Services
+   - Speech-to-text and text-to-speech conversion
+   - Real-time speech translation
+   - Custom voice models
+
+5. Azure Language Services
+   - Text analytics and sentiment analysis
+   - Named entity recognition
+   - Key phrase extraction
+
+These services can be combined to create powerful AI-driven applications that understand and process natural language, images, and speech.

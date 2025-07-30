@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocGenAI - PDF Upload Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0078d4;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .upload-section, .chat-section, .documents-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #0078d4;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        input[type="file"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e1e1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        button {
+            background: #0078d4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #106ebe;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .response {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            display: none;
+        }
+        .documents-list {
+            margin-top: 15px;
+        }
+        .document-item {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid #e1e1e1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 DocGenAI - Document Analysis</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            Upload PDF documents and chat with them using Azure AI
+        </p>
+
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <h2>📁 Upload PDF Document</h2>
+            <div class="form-group">
+                <label for="pdfFile">Select PDF File:</label>
+                <input type="file" id="pdfFile" accept=".pdf">
+            </div>
+            <button onclick="uploadFile()" id="uploadBtn">Upload PDF</button>
+            <div id="uploadStatus" class="status"></div>
+        </div>
+
+        <!-- Chat Section -->
+        <div class="chat-section">
+            <h2>💬 Chat with Documents</h2>
+            <div class="form-group">
+                <label for="chatMessage">Ask a question:</label>
+                <textarea id="chatMessage" placeholder="Enter your question about the uploaded documents..."></textarea>
+            </div>
+            <button onclick="sendChat()" id="chatBtn">Send Message</button>
+            <div id="chatResponse" class="response"></div>
+        </div>
+
+        <!-- Documents Section -->
+        <div class="documents-section">
+            <h2>📄 Uploaded Documents</h2>
+            <button onclick="loadDocuments()" id="loadDocsBtn">Refresh Documents</button>
+            <div id="documentsList" class="documents-list">
+                <p>Click "Refresh Documents" to load the list...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://ca-api-dev-varcvenlme53e.agreeabledesert-fe9fb50b.eastus2.azurecontainerapps.io';
+
+        function showStatus(elementId, message, isError = false) {
+            const statusEl = document.getElementById(elementId);
+            statusEl.textContent = message;
+            statusEl.className = `status ${isError ? 'error' : 'success'}`;
+            statusEl.style.display = 'block';
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 5000);
+        }
+
+        async function uploadFile() {
+            const fileInput = document.getElementById('pdfFile');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            if (!fileInput.files[0]) {
+                showStatus('uploadStatus', 'Please select a PDF file first!', true);
+                return;
+            }
+
+            const file = fileInput.files[0];
+            if (file.type !== 'application/pdf') {
+                showStatus('uploadStatus', 'Only PDF files are supported!', true);
+                return;
+            }
+
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Uploading...';
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch(`${API_BASE_URL}/documents/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showStatus('uploadStatus', `Successfully uploaded: ${file.name}`);
+                    fileInput.value = ''; // Clear the input
+                    loadDocuments(); // Refresh documents list
+                } else {
+                    showStatus('uploadStatus', `Upload failed: ${result.detail || 'Unknown error'}`, true);
+                }
+            } catch (error) {
+                showStatus('uploadStatus', `Upload error: ${error.message}`, true);
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'Upload PDF';
+            }
+        }
+
+        async function sendChat() {
+            const messageInput = document.getElementById('chatMessage');
+            const chatBtn = document.getElementById('chatBtn');
+            const responseEl = document.getElementById('chatResponse');
+            
+            if (!messageInput.value.trim()) {
+                alert('Please enter a message!');
+                return;
+            }
+
+            chatBtn.disabled = true;
+            chatBtn.textContent = 'Sending...';
+            responseEl.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: messageInput.value })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    responseEl.textContent = `Response: ${result.response || 'No response received'}`;
+                    responseEl.style.display = 'block';
+                } else {
+                    responseEl.textContent = `Chat failed: ${result.detail || 'Unknown error'}`;
+                    responseEl.style.display = 'block';
+                }
+            } catch (error) {
+                responseEl.textContent = `Chat error: ${error.message}`;
+                responseEl.style.display = 'block';
+            } finally {
+                chatBtn.disabled = false;
+                chatBtn.textContent = 'Send Message';
+            }
+        }
+
+        async function loadDocuments() {
+            const loadBtn = document.getElementById('loadDocsBtn');
+            const docsList = document.getElementById('documentsList');
+            
+            loadBtn.disabled = true;
+            loadBtn.textContent = 'Loading...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/documents`);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const documents = result.documents || [];
+                    if (documents.length === 0) {
+                        docsList.innerHTML = '<p>No documents uploaded yet. Upload a PDF to get started!</p>';
+                    } else {
+                        docsList.innerHTML = documents.map((doc, index) => 
+                            `<div class="document-item">
+                                <strong>Document ${index + 1}:</strong> ${doc.name || 'Unnamed document'}
+                            </div>`
+                        ).join('');
+                    }
+                } else {
+                    docsList.innerHTML = `<p style="color: red;">Failed to load documents: ${result.detail || 'Unknown error'}</p>`;
+                }
+            } catch (error) {
+                docsList.innerHTML = `<p style="color: red;">Error loading documents: ${error.message}</p>`;
+            } finally {
+                loadBtn.disabled = false;
+                loadBtn.textContent = 'Refresh Documents';
+            }
+        }
+
+        // Load documents on page load
+        window.addEventListener('load', loadDocuments);
+    </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "resourcesResourceGroups": "rg-",
+  "storageStorageAccounts": "st",
+  "cosmosdbDatabaseAccounts": "cosmos-",
+  "searchSearchServices": "srch-",
+  "cognitiveServicesAccounts": "cs-",
+  "containerRegistryRegistries": "cr",
+  "appManagedEnvironments": "cae-",
+  "appContainerApps": "ca-",
+  "webStaticSites": "stapp-",
+  "operationalInsightsWorkspaces": "log-",
+  "insightsComponents": "appi-",
+  "keyVaultVaults": "kv-",
+  "machineLearningServicesWorkspaces": "mlw-",
+  "machineLearningServicesComputeInstance": "ci-",
+  "managedIdentityUserAssignedIdentities": "id-"
+}

@@ -1,0 +1,27 @@
+# FastAPI and web framework dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# Azure SDK dependencies
+azure-storage-blob==12.19.0
+azure-cosmos==4.5.1
+azure-search-documents==11.4.0
+azure-identity==1.15.0
+
+# OpenAI and AI dependencies
+openai==1.40.0
+
+# Document processing
+PyPDF2==3.0.1
+python-multipart==0.0.6
+
+# Data processing and utilities
+python-dotenv==1.0.0
+numpy==1.24.3
+tiktoken==0.5.2
+langchain==0.1.0
+langchain-openai==0.0.2
+
+# Development and testing
+pytest==7.4.3
+httpx==0.25.2
