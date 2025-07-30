@@ -98,8 +98,8 @@ By the end of this workshop, you will:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-org/docgenai-workshop
-   cd docgenai-workshop
+   git clone https://github.com/gitpavleenbali/DocGenAI.git
+   cd DocGenAI
    ```
 
 2. **Login to Azure**

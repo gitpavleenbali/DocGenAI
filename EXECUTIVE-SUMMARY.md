@@ -70,7 +70,7 @@ DocGenAI is an enterprise-grade **Retrieval Augmented Generation (RAG)** solutio
 ### **Customer Deployment Experience**
 ```powershell
 # Customer's complete deployment process:
-git clone https://github.com/your-repo/DocGenAI.git
+git clone https://github.com/gitpavleenbali/DocGenAI.git
 cd DocGenAI
 .\deploy.ps1
 

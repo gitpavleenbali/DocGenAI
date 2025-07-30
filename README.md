@@ -6,14 +6,14 @@ Deploy a complete PDF document analysis solution with Azure AI Foundry + RAG cap
 
 ### Quick Start (Windows PowerShell)
 ```powershell
-git clone https://github.com/your-repo/DocGenAI.git
+git clone https://github.com/gitpavleenbali/DocGenAI.git
 cd DocGenAI
 .\deploy.ps1
 ```
 
 ### Quick Start (Mac/Linux Bash)
 ```bash
-git clone https://github.com/your-repo/DocGenAI.git
+git clone https://github.com/gitpavleenbali/DocGenAI.git
 cd DocGenAI
 chmod +x deploy.sh
 ./deploy.sh

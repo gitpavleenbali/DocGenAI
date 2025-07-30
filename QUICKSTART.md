@@ -2,7 +2,7 @@
 
 ## Windows PowerShell (Recommended)
 ```powershell
-git clone https://github.com/your-repo/DocGenAI.git
+git clone https://github.com/gitpavleenbali/DocGenAI.git
 cd DocGenAI
 .\deploy.ps1
 ```
@@ -14,7 +14,7 @@ cd DocGenAI
 
 ## Mac/Linux Bash
 ```bash
-git clone https://github.com/your-repo/DocGenAI.git
+git clone https://github.com/gitpavleenbali/DocGenAI.git
 cd DocGenAI
 chmod +x deploy.sh
 ./deploy.sh
